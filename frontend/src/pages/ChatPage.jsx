@@ -1,10 +1,31 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useAuth } from '../context/AuthContext';
+import { useState, useEffect } from 'react';
 
 export default function ChatPage() {
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState([]);
   const { token } = useAuth();
+
+  useEffect(() => {
+    const fetchHistory = async () => {
+      const res = await fetch('/api/chat/history', {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+  
+      const data = await res.json();
+      if (data.history) {
+        setMessages(data.history.map(msg => ({
+          role: msg.role,
+          content: msg.content
+        })));
+      }
+    };
+  
+    fetchHistory();
+  }, []);
 
   const sendMessage = async (e) => {
     e.preventDefault();
