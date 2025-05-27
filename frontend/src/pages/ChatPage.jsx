@@ -11,6 +11,27 @@ export default function ChatPage() {
   const [threads, setThreads] = useState([]);
   const [threadId, setThreadId] = useState(null);
   
+  const createThread = async () => {
+  try {
+    const res = await fetch('/api/threads', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    const newThread = await res.json();
+
+    // Update thread list and switch to new thread
+    setThreads(prev => [newThread, ...prev]);
+    setThreadId(newThread._id);
+    setMessages([]); // clear message view
+  } catch (err) {
+    console.error('Failed to create new thread:', err);
+  }
+};
+  
   useEffect(() => {
   const fetchThreads = async () => {
     try {
@@ -93,11 +114,28 @@ useEffect(() => {
     </option>
   ))}
 </select>
-      <div className="w-full max-w-xl space-y-2 mb-4">
-        {messages.map((msg, i) => (
-          <div key={i} className={`p-2 rounded ${msg.role === 'user' ? 'bg-blue-700 text-right' : 'bg-purple-700'}`}>
-            {msg.content}
-          </div>
+      <div className="w-full max-w-xl">
+  {/* ✅ Step 2: New Thread Button */}
+  <button
+    onClick={createThread}
+    className="mb-2 p-2 bg-cyan-700 text-white w-full rounded"
+  >
+    + New Thread
+  </button>
+
+  {/* Thread dropdown */}
+  <select
+    value={threadId || ''}
+    onChange={e => setThreadId(e.target.value)}
+    className="mb-4 p-2 bg-gray-800 text-white w-full"
+  >
+    {threads.map(t => (
+      <option key={t._id} value={t._id}>
+        {t.title}
+      </option>
+    ))}
+  </select>
+</div>
         ))}
       </div>
       <form onSubmit={sendMessage} className="w-full max-w-xl flex">

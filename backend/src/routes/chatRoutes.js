@@ -44,8 +44,14 @@ router.post('/', authMiddleware, async (req, res) => {
 });
 
 router.get('/history', authMiddleware, async (req, res) => {
+  const { thread } = req.query;
+
   try {
-    const history = await Message.find({ userId: req.user.id }).sort({ timestamp: 1 });
+    const history = await Message.find({
+      userId: req.user.id,
+      threadId: thread
+    }).sort({ timestamp: 1 });
+
     res.json({ history });
   } catch (err) {
     res.status(500).json({ error: 'Failed to load chat history' });
