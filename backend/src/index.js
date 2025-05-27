@@ -5,6 +5,7 @@ import cors from 'cors';
 
 import authRoutes from './routes/authRoutes.js';
 import chatRoutes from './routes/chatRoutes.js';
+import threadRoutes from './routes/threadRoutes.js';
 
 dotenv.config();
 
@@ -16,6 +17,7 @@ app.use(express.json());
 
 app.use('/api/auth', authRoutes);
 app.use('/api/chat', chatRoutes);
+app.use('/api/threads', threadRoutes);
 
 mongoose.connect(process.env.MONGO_URI)
   .then(() => {
