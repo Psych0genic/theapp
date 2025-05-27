@@ -20,15 +20,18 @@ router.post('/', authMiddleware, async (req, res) => {
     });
 
     const data = await ollamaRes.json();
+    const { message, threadId } = req.body;
 
     await Message.create({
       userId: req.user.id,
+      threadId,
       role: 'user',
       content: message
     });
     
     await Message.create({
       userId: req.user.id,
+      threadId,
       role: 'ai',
       content: data.response
     });
